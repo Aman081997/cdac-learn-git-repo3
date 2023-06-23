@@ -1,0 +1,230 @@
+First Hibernate Example:
+		1. Environment Setup
+			To use Hibernate, it is necessary to add Hibernate specific
+			libraries into the project's CLASSPATH.
+			
+			These libraries are in the form of JARs which are bundled 
+			into a single ZIP file that can be downloaded from internet.
+			
+			Instead of manually downloading these libraries, it is better
+			to get them through some tool.
+			
+			There are 2 such tools available in market:
+				1. Maven
+				2. Gradle
+				
+				Create a Maven Based project.
+				
+				Every Maven Based Project contains a configuration file:
+					pom.xml
+					(Project Object Model)
+					All the project specific configurations are done inside
+					this file.
+					
+				To add Hibernate specific JARs through Maven, it is 
+				necessary to add Hibernate Core Maven Dependency.
+				
+				How Maven adds JARs:
+					Maven maintains a bunch of JARs into a container called
+					as Repository.
+					
+					There are 3 types of Repositories:
+						1. Local
+						2. Central
+						3. Remote
+						
+		2. Create entity class
+			In the context of Hibernate, any class of which object gets
+			stored as a record into the database table, is known as 
+			entity class.
+			
+		3. Provide Mapping Metadata
+			Once an entity class is created, it is necessary to tell Hibernate
+			about to which table it is going to be mapped, to which columns
+			its fields are going to be mapped etc.
+			
+			This is possible by providing a Metadata in one of the 2 forms:
+				a) XML
+				b) Annotations
+				
+			In case of XML, the mapping file is termed as HBM file.
+			HBM: Hibernate Mapping
+			
+			This file can have any name, but by convention it is:
+			<<Entity-Class-Name>>.hbm.xml.
+			
+			In Maven based project, this file must be placed under
+			"src/main/resources" folder.
+			
+			In case of Hibernate Mapping, an entity class must declare
+			at least one field which will be considered as an identity of
+			the entity. This is similar to PRIMARY KEY constraint in 
+			database table.
+			
+		4. Provide Configuration Metadata
+			Hibernate hides the complexity of the application by reducing
+			the boiler-plate code e.g. loading the driver, establishing the
+			connection etc.
+			
+			But in order to get it done from Hibernate, it is necessary to 
+			provide Database specific configuration metadata:
+			E.g. Driver Class Name, URL, Username, Password etc
+			
+			In Hibernate, it is termed as CFG file.
+			CFG: Configuration 
+			
+			In Hibernate by default, configurations are taken from:
+			hibernate.cfg.xml
+			
+			It is also possible to load the configurations from a file called
+			as "hibernate.properties" but it's not much is use.
+			
+			In Maven based project, this file must be placed under
+			"src/main/resources" folder.
+			
+		5. Write a Main Program
+				a) Configure hibernate using Configuration class
+					When Configuration class is instantiated, Hibernate looks
+					for the file: "hibernate.properties" and once found, loads
+					all the configuration properties from that file.
+					
+					By any chance, if configuration is present inside 
+					"hibernate.cfg.xml", it must be informed to Hibernate.
+					This is done using configure() method.
+					
+					By any chance, if the XML file name is different, use
+					overloaded configure() method.
+					
+				b) Obtain SessionFactory:
+					Once Hibernate is configured, it is necessary to obtain
+					SessionFactory.
+					This is done using buildSessionFactory() method of 
+					Configuration class.
+					
+				c) Obtain Session:
+					Once SessionFactory is built, at any time a Session can
+					be obtained. It is required to perform CRUD operations.
+					This is done using openSession() method of
+					SessionFactory
+					
+				d) Create an entity class object with some information that
+					needs to be added as a record into the database table.
+					
+				e) Obtain Transaction:
+					In Hibernate, while performing any DML operation, it is
+					necessary to obtain a Transaction.
+					This is done using beginTransaction() method of Session.
+				
+				f) Persist (Store) the object of entity class.
+					To perform DML INSERT operation, the object of entity
+					class needs to be stored.
+					This is done using save() method of Session.
+					
+				g) Commit the Transaction:
+					Whatever object is stored in Session using save(), the 
+					changes are reflected into the database upon committing
+					the transaction.
+					This is done using commit() method of Transaction.
+					
+				h) Close the Session and SessionFactory
+				
+		What is the role of Dialect?
+		In Hibernate based application, it is necessary to set the dialect
+		property.
+		
+		For several popular databases, Hibernate provides respective
+		dialect implementation classes.
+		
+		E.g.
+			MySQL 5: MySQLDialect
+			MySQL 8: MySQL8Dialect
+			Oracle 10g: Oracle10gDialect
+		
+		This dialect is used by Hibernate to understand the database
+		capabilities and behave accordingly.
+		
+		Retrieving Data:
+		In order to retrieve data against ID, Session interface provides
+		load() method.
+		
+		There are several overloaded load() methods available. The most
+		frequently used accepts 2 parameters :
+			1. java,lang.Class
+					It indicates the Class type of the entity class.
+					Tells Hibernate which class object is to be populated 
+					after retrieval.
+					
+			2. java.io.Serializable
+					It indicates the ID.
+					In Hibernate, the rule is the type of the field which is
+					registered as ID, must be Serializable.
+					
+		
+	Loading of an entity object:
+	To load an entity object, Session interface provides load() method.
+	In Hibernate, loading takes place by 2 ways:
+		1. LAZY (Default)
+			When Session.load() is invoked, Hibernate simply creates an
+			object and returns it back; without connecting to database.
+			
+			This object returned by Hibernate is not the object of
+			entity class; rather it is a proxy.
+			
+			It means when Lazy Loading occurs, Hibernate always generates
+			a proxy.
+			
+			Unless and until client demands for the data, Hibernate does not
+			hit the database.
+			
+			As soon as client calls a getter method on any field which is other
+			than ID, Hibernate decides to initialize the proxy by connecting
+			to database. 
+			
+			
+		2. EAGER
+			Sometimes there is a need to load the data eagerly. 
+			This means, as soon as Session.load() is invoked, Hibernate 
+			must hit the database and load the data immediately.
+			
+			This is possible by enabling EAGER loading.
+			
+			In this case, Hibernate does not create proxy.
+			
+			To enable EAGER loading, use 'lazy=false' in
+			HBM file.
+			
+			How Proxies are generated?
+			Typically, there are 2 algorithms to generate proxy:
+				1. Containment
+				2. Inheritance
+			
+			It depends upon the Framework which approach is to be used.
+			Hibernate goes for Inheritance.
+			
+			Therefore, if an entity class is declared as 'final', Hibernate
+			cannot generate proxy and it results into EAGER loading by
+			default.
+			
+TODOs:
+		Enhance CMS as per the following:
+			Handle this by creating a Maven Project (Simple Project with
+			main() method)
+		
+			1. Use Hibernate to perform CRUD operations.
+			2. Configure Lazy or Eager loading and monitor the output.
+			
+			
+		
+		
+			
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
